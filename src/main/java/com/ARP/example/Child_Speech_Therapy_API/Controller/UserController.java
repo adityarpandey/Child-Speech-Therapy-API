@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-
+@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/v1/user")
@@ -61,7 +61,7 @@ public class UserController {
             return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<UserDto> loginUser(@RequestBody LoginRequest request){
 
 

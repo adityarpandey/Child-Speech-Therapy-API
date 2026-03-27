@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
-
+@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping(path = "/api/v1/session")
 @RequiredArgsConstructor

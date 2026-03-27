@@ -7,6 +7,8 @@ import lombok.Data;
 @Data
 public class SessionResponse {
 
+    private String audioStream;
+
     private String response;
 
 }

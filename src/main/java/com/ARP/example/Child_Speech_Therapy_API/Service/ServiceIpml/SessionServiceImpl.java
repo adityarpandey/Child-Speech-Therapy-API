@@ -1,12 +1,10 @@
 package com.ARP.example.Child_Speech_Therapy_API.Service.ServiceIpml;
 
-import com.ARP.example.Child_Speech_Therapy_API.Domain.DTO.SessionRequest;
+import com.ARP.example.Child_Speech_Therapy_API.Domain.DTO.*;
 
-import com.ARP.example.Child_Speech_Therapy_API.Domain.DTO.SessionRespondRequest;
-import com.ARP.example.Child_Speech_Therapy_API.Domain.DTO.SessionResponse;
-import com.ARP.example.Child_Speech_Therapy_API.Domain.DTO.SessionStartResponse;
 import com.ARP.example.Child_Speech_Therapy_API.Domain.Entities.User;
 import com.ARP.example.Child_Speech_Therapy_API.Repository.UserRepository;
+import com.ARP.example.Child_Speech_Therapy_API.Service.ElevenLabs;
 import com.ARP.example.Child_Speech_Therapy_API.Service.SessionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +24,8 @@ public class SessionServiceImpl implements SessionService {
 
     @Autowired
     private UserRepository userRepository;
+
+    private final ElevenLabs elevenLabs;
 
     private final RestTemplate restTemplate;
 
@@ -105,7 +105,16 @@ public class SessionServiceImpl implements SessionService {
 
         HttpEntity<SessionRespondRequest> entity = new HttpEntity<>(sessionRespondRequest , headers);
 
-        return restTemplate.postForObject(url , entity , SessionResponse.class);
+        AgentResponse agentResponse =  restTemplate.postForObject(url , entity , AgentResponse.class);
+
+        String text = agentResponse.getResponse();
+
+        String audioStream = elevenLabs.generateAudio(text);
+
+        return SessionResponse.builder()
+                .audioStream(audioStream)
+                .response(text)
+                .build();
 
     }
 
