@@ -4,14 +4,14 @@ import com.ARP.example.Child_Speech_Therapy_API.Service.ElevenLabs;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 
 @RequiredArgsConstructor
@@ -23,7 +23,7 @@ public class ElevenLabsImpl implements ElevenLabs {
     private final String VOICE_ID = "JBFqnCBsd6RMkjVDRZzb";
 
     @Override
-    public String generateAudio(String text) {
+    public InputStream generateAudio(String text) throws IOException {
 
         String url = "https://api.elevenlabs.io/v1/text-to-speech/" + VOICE_ID;
 
@@ -35,7 +35,11 @@ public class ElevenLabsImpl implements ElevenLabs {
 
         Map<String, Object> body = new HashMap<>();
         body.put("text", text);
-
+        body.put("model_id", "eleven_turbo_v2");
+        body.put("voice_settings", Map.of(
+                "stability", 0.5,
+                "similarity_boost", 0.5
+        ));
 
 
 
@@ -44,16 +48,16 @@ public class ElevenLabsImpl implements ElevenLabs {
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
-        ResponseEntity<byte[]> response = restTemplate.exchange(
+        ResponseEntity<Resource> response = restTemplate.exchange(
                 url,
                 HttpMethod.POST,
                 request,
-                byte[].class
+                Resource.class
         );
 
-        byte[] audioStream = response.getBody();
+        return Objects.requireNonNull(response.getBody()).getInputStream();
 
-        return Base64.getEncoder().encodeToString(audioStream);
+
 
     }
 }

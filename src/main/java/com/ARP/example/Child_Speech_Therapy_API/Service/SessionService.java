@@ -5,6 +5,8 @@ import com.ARP.example.Child_Speech_Therapy_API.Domain.DTO.SessionRespondRequest
 import com.ARP.example.Child_Speech_Therapy_API.Domain.DTO.SessionResponse;
 import com.ARP.example.Child_Speech_Therapy_API.Domain.DTO.SessionStartResponse;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.UUID;
 
 public interface SessionService {
@@ -17,6 +19,6 @@ public interface SessionService {
 
      String deleteSession(String sessionId);
 
-     SessionResponse respondSession(SessionRespondRequest sessionRespondRequest);
+     InputStream respondSession(SessionRespondRequest sessionRespondRequest) throws IOException;
 
 }

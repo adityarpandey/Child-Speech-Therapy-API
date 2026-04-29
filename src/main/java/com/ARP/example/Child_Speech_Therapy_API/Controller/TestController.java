@@ -26,7 +26,7 @@ public class TestController {
 
         Map<String, Object> body = new HashMap<>();
         body.put("text", "Hello, this is a test from Spring Boot");
-        body.put("model_id", "eleven_multilingual_v2");
+        body.put("model_id", "eleven_turbo_v2");
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 

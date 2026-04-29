@@ -9,7 +9,10 @@ import com.ARP.example.Child_Speech_Therapy_API.Service.SessionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.UUID;
 @CrossOrigin(origins = "http://localhost:8081")
 @RestController
@@ -41,18 +44,27 @@ public class SessionController {
     }
 
     @PostMapping(path = "/respond/{sessionId}")
-    public ResponseEntity<SessionResponse> respondSession(@PathVariable String sessionId,
-                                                          @RequestBody SessionRespondRequest sessionRespondRequest){
+    public ResponseEntity<StreamingResponseBody> respondSession(
+            @PathVariable String sessionId,
+            @RequestBody SessionRespondRequest sessionRespondRequest
+    ) throws IOException {
 
         sessionRespondRequest.setSessionId(sessionId);
 
-        System.out.println(sessionRespondRequest.getChildText());
+        InputStream inputStream = sessionService.respondSession(sessionRespondRequest);
 
-        SessionResponse sessionResponse = sessionService.respondSession(sessionRespondRequest);
+        StreamingResponseBody stream = outputStream -> {
+            byte[] buffer = new byte[4096]; // 🔥 important
+            int bytesRead;
 
-        return ResponseEntity.ok(sessionResponse);
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+        };
 
-
+        return ResponseEntity.ok()
+                .header("Content-Type", "audio/mpeg")
+                .body(stream);
     }
 
 

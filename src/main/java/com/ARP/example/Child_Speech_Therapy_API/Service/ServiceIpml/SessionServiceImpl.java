@@ -14,6 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -96,7 +98,7 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
-    public SessionResponse respondSession(SessionRespondRequest sessionRespondRequest) {
+    public InputStream respondSession(SessionRespondRequest sessionRespondRequest) throws IOException {
 
         String url = "http://localhost:8000/agent/respond";
 
@@ -109,12 +111,7 @@ public class SessionServiceImpl implements SessionService {
 
         String text = agentResponse.getResponse();
 
-        String audioStream = elevenLabs.generateAudio(text);
-
-        return SessionResponse.builder()
-                .audioStream(audioStream)
-                .response(text)
-                .build();
+        return elevenLabs.generateAudio(text);
 
     }
 
